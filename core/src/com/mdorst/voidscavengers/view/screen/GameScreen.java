@@ -61,21 +61,26 @@ public class GameScreen implements Screen {
         // See util.debug.DebugTextView
         debugTextView = new DebugTextView(10);
 
+        // Create 100 randomly placed floating boxes
         Body[] debris = new Body[100];
 
         for (int i = 0; i < 100; i++) {
+            // Create a new body
             debris[i] = new BodyBuilder()
+                    // Dynamic bodies are free floating, physics-enabled bodies
                     .type(BodyDef.BodyType.DynamicBody)
                     .restitution(0.5f)
                     .friction(0.3f)
                     .density(1)
                     .build(world);
+            // Position the body at a random place within the world
             debris[i].setTransform(MathUtils.random(Ref.window.width),
                                    random(Ref.window.height),
                                    random((float) (2 * Math.PI)));
         }
 
         {
+
             PolygonShape box = new PolygonShape();
             for (int i = 0; i < 4; i++) {
                 float width = i % 2 == 0 ? Ref.window.width / 2 : 0;
