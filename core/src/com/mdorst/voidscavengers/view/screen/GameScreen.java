@@ -18,6 +18,12 @@ import com.mdorst.voidscavengers.view.shape.EquilateralTriangle;
 
 import static com.badlogic.gdx.math.MathUtils.random;
 
+/**
+ * This is where the game itself happens.
+ * <p/>
+ * The callback for the render loop is in here, so all the code
+ * that goes into controlling the game is located here.
+ */
 public class GameScreen implements Screen {
 
     private final VoidScavengers game;
@@ -28,14 +34,31 @@ public class GameScreen implements Screen {
     private float world_scale;
     private DebugTextView debugTextView;
 
+    /**
+     * The constructor for the GameScreen is responsible for setting up all
+     * of the objects that will be in our game, including the camera.
+     *
+     * @param game An instance of the `VoidScavengers` class, which doesn't do much
+     */
     public GameScreen(VoidScavengers game) {
         this.game = game;
-
         camera = new OrthographicCamera();
-        world_scale = 1 / 5f;
+        // Zoom level of the camera
+        world_scale = Ref.camera.initial_world_scale;
+        // Param 1: Y-down = false
+        // Higher Y-values show higher up on the screen.
+        // Setting the first fontAttributes to `true` flips the game world upside down.
         camera.setToOrtho(false, view_width(), view_height());
+        // Param 1: Gravity given as a Vector2: (0, 0) means no gravity.
+        // Param 2: doSleep = true
+        // This allows objects that are not moving to "go to sleep"
+        // which reduces the number of physics computations per step.
         world = new World(new Vector2(0, 0), true);
+        // Provide a "debug renderer" which allows us to see what's happening in our scene,
+        // including what objects are sleeping, etc.
+        // This is only so we can see what we're doing before we're ready to make our own renderer.
         renderer = new Box2DDebugRenderer();
+        // See util.debug.DebugTextView
         debugTextView = new DebugTextView(10);
 
         Body[] debris = new Body[100];
@@ -47,7 +70,9 @@ public class GameScreen implements Screen {
                     .friction(0.3f)
                     .density(1)
                     .build(world);
-            debris[i].setTransform(MathUtils.random(Ref.window.width), random(Ref.window.height), random((float) (2 * Math.PI)));
+            debris[i].setTransform(MathUtils.random(Ref.window.width),
+                                   random(Ref.window.height),
+                                   random((float) (2 * Math.PI)));
         }
 
         {
